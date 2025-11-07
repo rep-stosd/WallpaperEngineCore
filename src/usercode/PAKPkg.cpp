@@ -1,5 +1,6 @@
-
+#include "stdafx.hpp"
 #include "PAK.h"
+
 #include <cstdlib>
 #include <cstdio>
 #include <sys/types.h>

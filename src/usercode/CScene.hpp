@@ -1,16 +1,6 @@
 #pragma once
 
-#include <string>
-#include <chrono>
-#include <thread>
-#include <filesystem>
-#include <cstdint>
-#include <string>
-#include <fstream>
-#include <cstdio>
-#include <vector>
-#include <unordered_map>
-
+#include "stdafx.hpp"
 #include "PAK.h"
 #include "Material.hpp"
 
@@ -26,15 +16,15 @@ public:
 
 class ImageLayer : public Layer {
 public:
-    simd::float3 cropOffset;
+    glm::vec2 cropOffset;
 };
 
 class ParticleLayer : public Layer  {
 public:
     struct ParticleInstance {
-        simd::float3 pos;
-        simd::float3 color;
-        simd::float3 velocity;
+        glm::vec3 pos;
+        glm::vec3 color;
+        glm::vec3 velocity;
         float size;
     };
     std::vector<ParticleInstance> insts;
@@ -47,25 +37,25 @@ public:
     int velocityMinX, velocityMaxX;
     int velocityMinY, velocityMaxY;
     int sizeMin, sizeMax;
-    simd::float3 origin;
+    glm::vec3 origin;
     
-    void update(const simd::float3& parentPos);
+    void update(const glm::vec3& parentPos);
 };
 
 struct Model {
     uint64_t id;
     uint64_t parentId;
     Model* parent;
-    simd::float3 size;
-    simd::float3 scale;
-    simd::float3 origin;
+    glm::vec3 size;
+    glm::vec3 scale;
+    glm::vec3 origin;
     int xOffset, yOffset;
     int zOrder;
     bool inheritParent;
     
     Layer* layer;
     
-    ImVec2 recursedOrigin, recursedScale;
+    glm::vec2 recursedOrigin, recursedScale;
     
     std::string name;
 };

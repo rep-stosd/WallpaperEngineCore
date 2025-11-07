@@ -2,6 +2,42 @@
 
 void MatVideoComponent::init(const PAKImage& img) {
     
+    avformat_open_input(&format_ctx, "null", nullptr, nullptr);
+    avformat_find_stream_info(format_ctx, nullptr);
+
+    for (unsigned int i = 0; i < format_ctx->nb_streams; ++i) {
+        if (format_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            video_stream_idx = i;
+            break;
+        }
+    }
+
+    AVCodecParameters* codecpar = format_ctx->streams[video_stream_idx]->codecpar;
+    const AVCodec* codec = avcodec_find_decoder(codecpar->codec_id);
+    codec_ctx = avcodec_alloc_context3(codec);
+    avcodec_parameters_to_context(codec_ctx, codecpar);
+
+    avcodec_open2(codec_ctx, codec, nullptr);
+
+    _pMaterial->width = codec_ctx->width;
+    _pMaterial->height = codec_ctx->height;
+    
+    _pMaterial->texture = new MTLTexture();
+    _pMaterial->texture->create(_pMaterial->width, _pMaterial->height, MTL::PixelFormatBGRA8Unorm, MTL::TextureType2D, MTL::StorageModeManaged, MTL::TextureUsageShaderRead);
+    
+    frame2 = av_frame_alloc();
+    av_image_alloc(frame2->data, frame2->linesize, _pMaterial->width, _pMaterial->height, AV_PIX_FMT_RGB32, 32);
+                
+    frame = av_frame_alloc();
+
+
+    //codec_ctx->time_base = av_make_q(1, 60000);
+    
+    
+    AVRational framerate = av_guess_frame_rate(format_ctx, format_ctx->streams[video_stream_idx], NULL);
+    frame_duration_sec = av_q2d({framerate.den, framerate.num});
+
+    last_update_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 

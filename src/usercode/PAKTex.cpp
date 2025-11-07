@@ -1,5 +1,7 @@
 
 #include "PAK.h"
+#include "TextureLoader.hpp"
+
 #include "deps/lz4.h"
 
 uint32_t nextPowerOfTwo(uint32_t v) {
@@ -50,6 +52,7 @@ PAKImage PAKImage_Alloc(const std::string& imgPath) {
         case '4':
             imgStream.read((char*)&containerHeader.fiFormat, sizeof(FREE_IMAGE_FORMAT));
             imgStream.read((char*)&containerHeader.mp4, sizeof(uint32_t));
+           // containerHeader.mp4 = true;
             if (containerHeader.mp4)
                 containerHeader.fiFormat = FIF_MP4;
             containerVersion = 4;

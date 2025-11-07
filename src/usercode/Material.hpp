@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mtl_renderer.h"
-
 #include "PAK.h"
 
 extern "C" {

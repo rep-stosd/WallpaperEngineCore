@@ -9,7 +9,7 @@ int randomInt(int min, int max) {
     return min + int(u % range);
 }
 
-void ParticleLayer::update(const simd::float3& parentPos) {
+void ParticleLayer::update(const glm::vec3& parentPos) {
     if (insts.size() >= maxCount) {
         insts.erase(insts.begin(), insts.begin() + (insts.size() - maxCount));
     }
@@ -17,8 +17,8 @@ void ParticleLayer::update(const simd::float3& parentPos) {
     for (int i = 0; i < rate+1; i++) {
         
         ParticleInstance inst = {};
-        inst.pos = parentPos + simd::make_float3(randomInt(distanceMinX, distanceMaxX),randomInt(distanceMinY, distanceMaxY),0);
-        inst.velocity = simd::make_float3(randomInt(velocityMinX, velocityMaxX), randomInt(velocityMinY, velocityMaxY)-5, 0);
+        inst.pos = parentPos + glm::vec3(randomInt(distanceMinX, distanceMaxX),randomInt(distanceMinY, distanceMaxY),0);
+        inst.velocity = glm::vec3(randomInt(velocityMinX, velocityMaxX), randomInt(velocityMinY, velocityMaxY)-5, 0);
         inst.size = randomInt(sizeMin, sizeMax);
         insts.push_back(inst);
     }

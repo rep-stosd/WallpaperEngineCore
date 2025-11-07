@@ -208,8 +208,8 @@ void Scene::parseParticle(ParticleLayer* render, const std::string& path) {
 }
 
 
-ImVec2 recurseModelPosition(Model* mdl) {
-    auto translatedOrigin = ImVec2(mdl->origin.x, mdl->origin.y);
+glm::vec2 recurseModelPosition(Model* mdl) {
+    auto translatedOrigin = glm::vec2(mdl->origin.x, mdl->origin.y);
 
     if (mdl->parent && mdl->parentId != -1) {
         return translatedOrigin+ recurseModelPosition(mdl->parent);
@@ -218,8 +218,8 @@ ImVec2 recurseModelPosition(Model* mdl) {
 }
 
 
-ImVec2 recurseModelScale(Model* mdl) {
-    auto scale = ImVec2(mdl->scale.x, mdl->scale.y);
+glm::vec2 recurseModelScale(Model* mdl) {
+    auto scale = glm::vec2(mdl->scale.x, mdl->scale.y);
    if (mdl->parent && mdl->parentId != -1) {
         return scale * recurseModelScale(mdl->parent);
    }
@@ -261,10 +261,10 @@ void Scene::initForPkg(const std::string& path) {
                     float x, y, z;
                     ss >> x >> y >> z;
 
-                    model->scale = simd::make_float3(x,y, 1.f);
+                    model->scale = glm::vec3(x,y, 1.f);
                 }
                 else
-                    model->scale = simd::make_float3(1.f,1.f,1.f);
+                    model->scale = glm::vec3(1.f,1.f,1.f);
 
                 //    "origin" : "1920.00000 1080.00000 0.00000",
                 if (object["origin"].is_string()) {
@@ -275,7 +275,7 @@ void Scene::initForPkg(const std::string& path) {
                     ss >> x >> y >> z;
 
 
-                    model->origin = simd::make_float3(x,y,z);
+                    model->origin = glm::vec3(x,y,z);
                 }
 
                 //    "origin" : "1920.00000 1080.00000 0.00000",
@@ -286,12 +286,12 @@ void Scene::initForPkg(const std::string& path) {
                     float x, y;
                     ss >> x >> y;
 
-                    model->size = simd::make_float3(x,y,1);
+                    model->size = glm::vec3(x,y,1);
                 }
                 else
-                    model->size = simd::make_float3(1.f, 1.f,1.f);
+                    model->size = glm::vec3(1.f, 1.f,1.f);
 
-          //      model->cropOffset = simd::make_float3(0,0,0);
+          //      model->cropOffset = glm::vec3(0,0,0);
                 
                 //"image" : "models/util/composelayer.json",
                 if (object["image"].is_string()) {
@@ -300,7 +300,7 @@ void Scene::initForPkg(const std::string& path) {
                     parseImage((ImageLayer*)model->layer, imageStr);
                     
                  //   auto& rend = ((ImageRender*)model->render)->material;
-                   // model->size *= simd::make_float3((float)rend.width/rend.texWidth, (float)rend.height/rend.texHeight, 0.f);
+                   // model->size *= glm::vec3((float)rend.width/rend.texWidth, (float)rend.height/rend.texHeight, 0.f);
                    
                 }
                 
@@ -372,7 +372,7 @@ void Scene::initForPkg(const std::string& path) {
                 float x, y, z;
                 ss >> x >> y >> z;
 
-           //     camPos = simd::make_float3(x,y,z);
+           //     camPos = glm::vec3(x,y,z);
             }
         }
     }

@@ -1,23 +1,15 @@
-#include "../netgame4mt/RenderEngine.hpp"
+#include "mtl_renderer.h"
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
-#include "../gui/imgui_impl_glfw.h"
+#include "gui/imgui_impl_glfw.h"
 
 GLFWwindow* window = nullptr;
 
 void apphide(GLFWwindow* wnd, void* metalDevice) ;
-
-std::string GetBundleFilePath(const std::string& filename);
-
-
-void ____test_Tahoe_clearframe() {
-    glfwPollEvents();
-    ImGui_ImplGlfw_NewFrame();
-}
 
 int main( int argc, char* argv[] )
 {
@@ -36,11 +28,8 @@ int main( int argc, char* argv[] )
     auto* _pDevice = MTL::CreateSystemDefaultDevice();
     apphide(window, (void*)_pDevice);
 
-    
-    RenderEngine::initSingleton();
     MTLRenderer::initSingleton();
     MTLRenderer::singleton()->init(_pDevice->retain());
-    RenderEngine::singleton()->init();
     
     
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -48,16 +37,15 @@ int main( int argc, char* argv[] )
     ImGui::GetIO().Fonts->AddFontFromFileTTF("/System/Library/Fonts/PingFang.ttc", 16.f);
    // ImGui::GetIO().Fonts->AddFontFromFileTTF(GetBundleFilePath("helvetica.ttc").data(), 16.f);
 
-    void tahoe_create(MTL::Device*);
-    tahoe_create(_pDevice);
     
     while (!glfwWindowShouldClose(window)) {
-        void tahoe_update();
-        tahoe_update();
         
         glfwPollEvents();
         ImGui_ImplGlfw_NewFrame();
-        RenderEngine::singleton()->frame();
+        
+        
+        MTLRenderer::singleton()->beginFrame();
+        MTLRenderer::singleton()->endFrame();
     }
     
     pAutoreleasePool->release();

@@ -1,12 +1,13 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "wallpaper64.h"
 #include "CScene.hpp"
-#include "../gui/imgui_internal.h"
+#include "gui/imgui_internal.h"
 
 
 std::string GetBundleFilePath(const std::string& filename);
 
-ImVec2 recurseModelPosition(Model* mdl) ;
-ImVec2 recurseModelScale(Model* mdl);
+glm::vec2 recurseModelPosition(Model* mdl) ;
+glm::vec2 recurseModelScale(Model* mdl);
 
 Scene scene;
 
@@ -64,12 +65,9 @@ void NetGameImguiWindow() {
         style.GrabRounding = 25;
         
         init = true;
+        void Wallpaper64SteamUI();
         Wallpaper64SteamUI();
     }
-    
-    
-    void tahoe_gui();
-    tahoe_gui();
     
     ImGui::Begin("New WALLPAPER64");
     ImGui::DragInt("count", &count);
@@ -85,15 +83,15 @@ void NetGameImguiWindow() {
         float cxx[2];
         cxx[0] = i->origin.x; cxx[1] = i->origin.y;
         ImGui::DragFloat2("pos", cxx);
-        i->origin = {cxx[0], cxx[1]};
+        i->origin = {cxx[0], cxx[1], i->origin.z};
         
         cxx[0] = i->size.x; cxx[1] = i->size.y;
         ImGui::DragFloat2("sz", cxx);
-        i->size = {cxx[0], cxx[1]};
+        i->size = {cxx[0], cxx[1], i->size.z};
         
         cxx[0] = i->scale.x; cxx[1] = i->scale.y;
         ImGui::DragFloat2("scale", cxx);
-        i->scale = {cxx[0], cxx[1]};
+        i->scale = {cxx[0], cxx[1], i->scale.z};
         
         
         
@@ -118,7 +116,7 @@ void NetGameImguiWindow() {
     
     ImGui::End();
     
-    
+    void Wallpaper64SteamUI();
     Wallpaper64SteamUI();
     
     
@@ -137,8 +135,8 @@ void NetGameImguiWindow() {
             if (i->layer && i->layer->material.texture) {
                 if (ImageLayer* r = dynamic_cast<ImageLayer*>(i->layer)) {
                     ImVec2 crop(r->cropOffset.x, r->cropOffset.y);
-                    ImVec2 pos = i->recursedOrigin * _size;
-                    ImVec2 size = i->recursedScale * ImVec2(i->size.x, i->size.y) * _size;
+                    ImVec2 pos = ImVec2(i->recursedOrigin.x, i->recursedOrigin.y) * _size;
+                    ImVec2 size = ImVec2(i->recursedScale.x, i->recursedScale.y) * ImVec2(i->size.x, i->size.y) * _size;
                     ImVec2 cursorPos = ImVec2(pos.x,  -pos.y) - ImVec2((size.x * 0.5f) * i->xOffset, (size.y * 0.5f)  * i->yOffset);
                     
                     ImGui::SetCursorPos(cursorPos * _scale + camPos);
@@ -150,7 +148,7 @@ void NetGameImguiWindow() {
                     
                     for (auto& inst : r->insts) {
                         ImVec2 pos = ImVec2(inst.pos.x, inst.pos.y) * _size;
-                        ImVec2 size = i->recursedScale * inst.size * _size;
+                        ImVec2 size = ImVec2(i->recursedScale.x, i->recursedScale.y) * inst.size * _size;
                         ImVec2 cursorPos = ImVec2(pos.x,  -pos.y) - ImVec2((size.x * 0.5f) * i->xOffset, (size.y * 0.5f)  * i->yOffset);
                         
                         ImGui::SetCursorPos(cursorPos * _scale + camPos);

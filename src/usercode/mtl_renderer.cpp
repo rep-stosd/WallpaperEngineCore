@@ -168,7 +168,7 @@ void MTLDepthStencilState::destroy() {
 
 
 
-#include "deps/gui/imgui_impl_metal.h"
+#include "deps/imgui/imgui_impl_metal.h"
 
 MTLRenderer* MTLRenderer::_pSingleton = nullptr;
 
@@ -202,15 +202,8 @@ void MTLRenderer::renderTahoePipeline(MTL::CommandBuffer* pCmd, CA::MetalDrawabl
     ImGui::Render();
     ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), pCmd, pEnc);
 
-  
-
-    
     pEnc->endEncoding();
     pRpd->release();
-}
-
-void MTLRenderer::renderCompositionPipeline(MTL::CommandBuffer* pCmd) {
-    
 }
 
 NS::AutoreleasePool* MTLRenderer_pAutoreleasePool;

@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
-#include "gui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_glfw.h"
 
 GLFWwindow* window = nullptr;
 
@@ -23,7 +23,7 @@ int main( int argc, char* argv[] )
         return 0;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(1920, 1080, "wallpaper64", NULL, NULL);
+    window = glfwCreateWindow(1280, 960, "", NULL, NULL);
     
     auto* _pDevice = MTL::CreateSystemDefaultDevice();
     apphide(window, (void*)_pDevice);

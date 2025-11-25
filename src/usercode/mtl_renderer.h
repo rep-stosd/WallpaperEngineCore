@@ -11,7 +11,6 @@ public:
     void init(MTL::Device* device);
     
     void beginFrame();
-    void renderCompositionPipeline(MTL::CommandBuffer* pCmd);
     void renderTahoePipeline(MTL::CommandBuffer* pCmd, CA::MetalDrawable* drawable);
     void endFrame();
     

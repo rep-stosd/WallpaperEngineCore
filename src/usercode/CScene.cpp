@@ -26,10 +26,10 @@ void Scene::parseMaterial(Material& mat, const std::string& path) {
                     mat.texture = new MTLTexture();
                     auto img = PAKImage_Alloc(sceneRootPath + "materials/" + path);
                     
-                    if (img.name == "!!&&ERROR___tex_not_found")
+                    if (!img.name.size())
                         img = PAKImage_Alloc(GetBundleFilePath("assets/materials/" + path));
                         
-                    if (img.name != "!!&&ERROR___tex_not_found") {
+                    if (img.name.size()) {
                         mat.width = img.width;
                         mat.height = img.height;
                         mat.texWidth = img.texWidth;

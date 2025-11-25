@@ -36,15 +36,6 @@ private:
     
 };
 
-class REND_GLSLParser {
-public:
-    void init();
-    void addShader();
-    void destroy();
-private:
-    
-};
-
 struct ShaderStateBuffer {
     struct ShaderStateInfo {
         uint64_t size;
@@ -53,9 +44,11 @@ struct ShaderStateBuffer {
     std::vector<uint8_t> data;
     std::unordered_map<std::string, ShaderStateInfo> reflection;
     MTLBuffer gpuBuffer;
+    uint64_t stateSize;
     
-    void init() {
-        
+    void create(uint64_t size) {
+        gpuBuffer.create(size, MTL::ResourceStorageModeManaged);
+        stateSize = size;
     }
     
     void set(const std::string& name, const uint8_t *pdata) {
@@ -64,20 +57,12 @@ struct ShaderStateBuffer {
     }
     
     void commit() {
-        
+        gpuBuffer.upload((void*)data.data(), stateSize);
     }
     
     MTLBuffer& get() {
         return gpuBuffer;
     }
-};
-
-class REND_StateManager {
-public:
-    
-private:
-    std::unordered_map<uint64_t, ShaderStateBuffer> shaderUniformBuffers;
-    std::unordered_map<uint64_t, MTLShader> shaders;
 };
 
 
@@ -90,6 +75,18 @@ private:
     MTLRenderer *_pRend;
 };
 
-class REND_GLPresenter {
+
+class REND_StateManager {
+public:
+    /* R_ShaderParser.cpp */
+    void createShaders();
     
+    
+    /* R_StateManager.cpp */
+    void init();
+    
+private:
+    std::unordered_map<uint64_t, ShaderStateBuffer> shaderUniformBuffers;
+    std::unordered_map<uint64_t, MTLShader> shaders;
 };
+

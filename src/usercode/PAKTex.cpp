@@ -19,7 +19,7 @@ PAKImage PAKImage_Alloc(const std::string& imgPath) {
     std::ifstream imgStream(imgPath.data());
 
     if (!imgStream.is_open()) {
-        return {"!!&&ERROR___tex_not_found"};
+        return {};
     }
     
     PAKImage img = {};

@@ -1,94 +1,97 @@
-
+#include "stdafx.hpp"
 #include "R_Common.hpp"
 #include "deps/SPIRV-Reflect/spirv_reflect.h"
 #include "deps/glslang/glslang/Public/ShaderLang.h"
 #include "deps/glslang/SPIRV/GlslangToSpv.h"
 #include "deps/SPIRV-Cross/spirv_msl.hpp"
 
-const char *TEST_SHADER_CODE = R"(
+const uint64_t shader_version = 330;
 
-cbuffer ModelViewProjectionConstantBuffer : register(b0)
-{
-    matrix model;
-    matrix view;
-    matrix projection;
+class TIncluder : public glslang::TShader::Includer {
+public:
+    IncludeResult* includeLocal(const char* headerName, const char* includerName, size_t inclusionDepth) override {
+        return readLocalPath(headerName, includerName, (int)inclusionDepth);
+    }
+
+    IncludeResult* includeSystem(const char* headerName, const char* includerName, size_t inclusionDepth) override {
+        return readLocalPath(headerName, includerName, (int)inclusionDepth);
+    }
+
+    void releaseInclude(IncludeResult* result) override {
+        if (result) {
+            delete[] result->headerData;
+            delete result;
+        }
+    }
+
+private:
+    IncludeResult* readLocalPath(const char* headerName, const char* includerName, int depth) {
+        // in the future, adjust for workshop shaders (not in base resource)
+        std::string rpath = headerName;
+        std::ifstream file("assets/shaders/" + rpath, std::ios::ate | std::ios::binary);
+        if (!file.is_open()) {
+            return nullptr;
+        }
+
+        size_t fileSize = (size_t)file.tellg();
+        char* content = new char[fileSize + 1];
+        file.seekg(0);
+        file.read(content, fileSize);
+        content[fileSize] = '\0';
+
+        return new IncludeResult(headerName, content, fileSize, nullptr);
+    }
 };
 
-
-struct VS_INPUT
-{
-    float3 vPosition     : POSITION;
-    float2 vUv            : TEXCOORD0;
-};
-
-struct VS_OUTPUT
-{
-    float4 vPosition      : SV_POSITION;
-    float2 vUv             : UV;
-    float3 vNormal        : NORMAL;
-};
-
-Texture2D tColormap : register( t0 );
-Texture2D tDetail : register( t1 );
-
-VS_OUTPUT mainVS( VS_INPUT input )
-{
-    VS_OUTPUT output;
-    output.vPosition = float4(input.vPosition, 1.0f); //mul( worldToView, float4( input.vPosition, 0.0 ) );
-    //output.vPosition = mul( viewToProjection, float4( output.vPosition.xyz, 1.0 ) );
-    output.vPosition = mul(output.vPosition, model);
-    output.vPosition = mul(output.vPosition, view);
-    output.vPosition = mul(output.vPosition, projection);
-//    output.vPosition.z = 0.0001;
-
-    output.vUv = input.vUv;
-    output.vNormal = normalize( input.vPosition.xyz );
+void REND_StateManager::parseGLSLShader(const std::string &file, const std::string &entryPoint, uint64_t shaderStage){
+    std::string rpath = GetBundleFilePath(file);
+    std::ifstream str(rpath.data());
     
-    return output;
-};
-
-float4 mainPS( VS_OUTPUT input ) : SV_TARGET0
-{
-    return float4( 0.0, 1.0, 1.0, 1.0);
-}
- 
-)";
-
-void REND_StateManager::createShaders() {
-    glslang::InitializeProcess();
+    if (!str.is_open()) {
+        assert( false );
+    }
+    
+    std::ostringstream buffer;
+    buffer << str.rdbuf();
+    
+    std::string contents = buffer.str();
+    str.close();
+    
+    auto * c_contents = contents.data();
+    
     
     glslang::TShader shader(EShLangVertex);
-    shader.setStrings(&TEST_SHADER_CODE, 1);
+    shader.setStrings(&c_contents, 1);
     
-    shader.setEnvInput(glslang::EShSourceHlsl, EShLangVertex, glslang::EShClientVulkan, 100);
+    shader.setEnvInput(glslang::EShSourceGlsl, EShLangVertex, glslang::EShClientVulkan, shader_version);
     shader.setEnvTarget(glslang::EshTargetSpv, glslang::EShTargetSpv_1_1);
-    shader.setEntryPoint("mainVS");
+    shader.setEntryPoint(entryPoint.data());
+    
+    shader.setPreamble("#extension GL_GOOGLE_include_directive : require\n");
     
     
     TBuiltInResource resources;
+    TIncluder includer;
     
-    if (!shader.parse(&resources, 100, false, EShMsgDefault)) {
+    
+    if (!shader.parse(&resources, shader_version, false, EShMsgDefault, includer)) {
         printf("HLSL parsing failed: %s\n", shader.getInfoLog());
         printf(" %s\n", shader.getInfoDebugLog());
-        glslang::FinalizeProcess();
         return;
     }
-
     
     glslang::TProgram program;
     program.addShader(&shader);
     
-    
     if (!program.link(EShMsgDefault)) {
         printf("%s HLSL linking failed\n", program.getInfoLog());
         printf("%s\n", program.getInfoDebugLog());
-        glslang::FinalizeProcess();
         return;
     }
-
+    
     std::vector<uint32_t> spirv;
     glslang::GlslangToSpv(*program.getIntermediate(EShLangVertex), spirv);
-
+    
     spirv_cross::CompilerMSL mslCompiler(spirv);
     spirv_cross::CompilerMSL::Options mslOptions;
     mslOptions.set_msl_version(2, 0);
@@ -101,6 +104,14 @@ void REND_StateManager::createShaders() {
         glslang::FinalizeProcess();
         return;
     }
+}
+
+void REND_StateManager::createShaders() {
+    glslang::InitializeProcess();
+    
+   
+    parseGLSLShader("assets/shaders/genericimage.vert", "main", 114514);
+    
     
     
     glslang::FinalizeProcess();

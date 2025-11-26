@@ -2,10 +2,12 @@
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include <GLFW/glfw3native.h>
+#include <string>
 
 
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
+#import <Foundation/Foundation.h>
 
 CAMetalLayer* metalLayer = nil;
 
@@ -73,9 +75,6 @@ void* currentDrawable() {
     return (__bridge void*)[metalLayer nextDrawable];
 }
 
-
-#include <string>
-#import <Foundation/Foundation.h>
 
 
 std::string GetBundleFilePath(const std::string& filename) {

@@ -4,7 +4,6 @@
 #include "imgui/imgui_internal.h"
 
 Scene scene;
-
 REND_StateManager stateManager;
 /*
  DEVELOPMENT GOALS:

@@ -79,6 +79,7 @@ private:
 class REND_StateManager {
 public:
     /* R_ShaderParser.cpp */
+    void parseGLSLShader(const std::string& file, const std::string& entryPoint, uint64_t shaderStage);
     void createShaders();
     
     

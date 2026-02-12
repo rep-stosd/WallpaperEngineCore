@@ -16,25 +16,32 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void apphide_togglehide(GLFWwindow *wnd, bool state = true) {
-   glfwSetWindowAttrib( wnd, GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
-   glfwSetWindowAttrib( wnd, GLFW_DECORATED, GLFW_FALSE );
-   glfwSetWindowAttrib( wnd, GLFW_FOCUS_ON_SHOW, GLFW_FALSE );
+    glfwSetWindowAttrib( wnd, GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
+    glfwSetWindowAttrib( wnd, GLFW_DECORATED, GLFW_FALSE );
+    glfwSetWindowAttrib( wnd, GLFW_FOCUS_ON_SHOW, GLFW_FALSE );
     
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     
     glfwSetWindowSize(wnd, mode->width, mode->height);
     
-   ProcessSerialNumber psn = {0, kCurrentProcess};
-   TransformProcessType(&psn, kProcessTransformToUIElementApplication);
+    ProcessSerialNumber psn = {0, kCurrentProcess};
+    TransformProcessType(&psn, kProcessTransformToUIElementApplication);
 
-   NSWindow* ns_wnd = glfwGetCocoaWindow(wnd);
-   ns_wnd.level = kCGDesktopIconWindowLevel;
-   ns_wnd.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces;
-
-   [ns_wnd setFrame:CGRectMake(0, 0, [ns_wnd frame].size.width , [ns_wnd frame].size.height) display:YES];
+    NSWindow* ns_wnd = glfwGetCocoaWindow(wnd);
+    ns_wnd.level = kCGDesktopIconWindowLevel;
+    ns_wnd.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces
+                              | NSWindowCollectionBehaviorStationary
+                              | NSWindowCollectionBehaviorIgnoresCycle;
+    
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    [CATransaction commit];
+    
+    [ns_wnd setFrame:CGRectMake(0, 0, [ns_wnd frame].size.width , [ns_wnd frame].size.height) display:YES];
 
 }
+
 
 void apphide(GLFWwindow* wnd, void* metalDevice) {
 

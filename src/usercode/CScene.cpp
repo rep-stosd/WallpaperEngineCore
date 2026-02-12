@@ -21,13 +21,15 @@ void Scene::parseMaterial(Material& mat, const std::string& path) {
         if (matPass["textures"].is_array()) {
             for (auto texture : matPass["textures"].get_array()) {
                 if (texture.is_string()) {
-                    std::string path = texture.get_string().value().data();
-                    path += ".tex";
+                    std::string file = (std::string)texture.get_string().value().data() + ".tex";
+                    std::string path = sceneRootPath + "materials/" + file;
+                    
                     mat.texture = new MTLTexture();
-                    auto img = PAKImage_Alloc(sceneRootPath + "materials/" + path);
+                    auto img = PAKImage_Alloc(path);
                     
                     if (!img.name.size())
-                        img = PAKImage_Alloc(GetBundleFilePath("assets/materials/" + path));
+                        path = "assets/materials/" + file;
+                        img = PAKImage_Alloc(GetBundleFilePath(path));
                         
                     if (img.name.size()) {
                         mat.width = img.width;
@@ -44,18 +46,47 @@ void Scene::parseMaterial(Material& mat, const std::string& path) {
                         PAKImage_Free(img);
                     }
                     else
-                        *mat.texture = TextureLoader::createUncompressedTexture("7jx.png");
+                        *mat.texture = TextureLoader::createUncompressedTexture("NULL.png");
                     
                     materials[XXH3_64bits(img.name.data(), img.name.length())] = &mat;
+                    textures[XXH3_64bits(path.data(), path.length())] = mat.texture;
                     
                 }
             }
-
         }
+        
+        if (matPass["blending"].is_string())
+        {
+            
+        }
+        
+        
+        if (matPass["depthtest"].is_string())
+        {
+            
+        }
+        
+        if (matPass["depthwrite"].is_string())
+        {
+            
+        }
+        
+        if (matPass["shader"].is_string())
+        {
+            
+        }
+        
+        
+        
     }
 
 }
 
+
+void Scene::parseModel(Model& model, const std::string& path)
+{
+    
+}
 
 void Scene::parseImage(ImageLayer* render, const std::string& path) {
     if(!std::filesystem::exists(sceneRootPath + path))
@@ -79,6 +110,11 @@ void Scene::parseImage(ImageLayer* render, const std::string& path) {
 
     if (root["material"].is_string()) {
         parseMaterial(render->material, root["material"].get_string().value().data() );
+    }
+    
+    
+    if (root["puppet"].is_string()) {
+        parseMaterial(render->material, root["puppet"].get_string().value().data() );
     }
     
 }
@@ -208,7 +244,7 @@ void Scene::parseParticle(ParticleLayer* render, const std::string& path) {
 }
 
 
-glm::vec2 recurseModelPosition(Model* mdl) {
+glm::vec2 recurseModelPosition(Node* mdl) {
     auto translatedOrigin = glm::vec2(mdl->origin.x, mdl->origin.y);
 
     if (mdl->parent && mdl->parentId != -1) {
@@ -218,7 +254,7 @@ glm::vec2 recurseModelPosition(Model* mdl) {
 }
 
 
-glm::vec2 recurseModelScale(Model* mdl) {
+glm::vec2 recurseModelScale(Node* mdl) {
     auto scale = glm::vec2(mdl->scale.x, mdl->scale.y);
    if (mdl->parent && mdl->parentId != -1) {
         return scale * recurseModelScale(mdl->parent);
@@ -252,7 +288,7 @@ void Scene::initForPkg(const std::string& path) {
 
 
 
-                Model* model = new Model();
+                Node* model = new Node();
 
                 if (object["scale"].is_string()) {
                     auto originStr = object["scale"].get_string().value().data();
@@ -291,23 +327,25 @@ void Scene::initForPkg(const std::string& path) {
                 else
                     model->size = glm::vec3(1.f, 1.f,1.f);
 
-          //      model->cropOffset = glm::vec3(0,0,0);
                 
-                //"image" : "models/util/composelayer.json",
-                if (object["image"].is_string()) {
-                    auto imageStr = object["image"].get_string().value().data();
-                    model->layer = new ImageLayer();
-                    parseImage((ImageLayer*)model->layer, imageStr);
+                // MODEL TYPES PARSER
+                {
                     
-                 //   auto& rend = ((ImageRender*)model->render)->material;
-                   // model->size *= glm::vec3((float)rend.width/rend.texWidth, (float)rend.height/rend.texHeight, 0.f);
-                   
-                }
-                
-                if (object["particle"].is_string()) {
-                    auto imageStr = object["particle"].get_string().value().data();
-                    model->layer = new ParticleLayer();
-                    parseParticle((ParticleLayer*)model->layer, imageStr);
+                    if (object["image"].is_string()) {
+                        auto imageStr = object["image"].get_string().value().data();
+                        model->layer = new ImageLayer();
+                        model->layer->type = LAYER_TYPE_IMAGE;
+                        parseImage((ImageLayer*)model->layer, imageStr);
+                    }
+                    
+                    if (object["particle"].is_string()) {
+                        auto imageStr = object["particle"].get_string().value().data();
+                        model->layer = new ParticleLayer();
+                        model->layer->type = LAYER_TYPE_PARTICLE;
+                        parseParticle((ParticleLayer*)model->layer, imageStr);
+                    }
+                    
+                    
                 }
 
                 // has parent
@@ -327,7 +365,7 @@ void Scene::initForPkg(const std::string& path) {
                     auto id = object["id"].get_int64().value();
                    // printf("INFO : add model %d \n", id);
                     model->id = id;
-                    modelsById[id] = model;
+                    nodesById[id] = model;
                 }
 
                 model->xOffset = model->yOffset = 1;
@@ -354,7 +392,7 @@ void Scene::initForPkg(const std::string& path) {
                     model->name = object["name"].get_c_str().value();
                 }
 
-                models.push_back(model);
+                nodes.push_back(model);
 
 
             }
@@ -378,14 +416,14 @@ void Scene::initForPkg(const std::string& path) {
     }
 
     // resolve parent
-    for (int i = 0; i < models.size(); i++) {
-         models[models.size()-i-1]->zOrder = -i;
-        if (models[i] && models[i]->parentId != -1) {
-            models[i]->parent = modelsById[models[i]->parentId];
+    for (int i = 0; i < nodes.size(); i++) {
+        nodes[nodes.size()-i-1]->zOrder = -i;
+        if (nodes[i] && nodes[i]->parentId != -1) {
+            nodes[i]->parent = nodesById[nodes[i]->parentId];
         }
     }
 
-    for (auto& i : models) {
+    for (auto& i : nodes) {
         i->recursedScale = recurseModelScale(i);
         i->recursedOrigin = recurseModelPosition(i);
     }
@@ -394,7 +432,7 @@ void Scene::initForPkg(const std::string& path) {
 
 
 void Scene::initForVideo(const std::string& path) {
-    assert(!("UNIMPLEMENTED AS OF YET!"));
+    //assert(!("UNIMPLEMENTED AS OF YET!"));
     /*
         Model* model = new Model();
         model->render = new VideoRender();
@@ -426,15 +464,18 @@ void Scene::update() {
             j->update();
         }
     }
-    for (auto& i : models) {
+    for (auto& i : nodes) {
         if (i->layer) {
             i->layer->update();
         }
+        
+        i->recursedScale = recurseModelScale(i);
+        i->recursedOrigin = recurseModelPosition(i);
     }
 }
 
 void Scene::destroy() {
-    for (auto& i : models) {
+    for (auto& i : nodes) {
         if (i->layer) {
             i->layer->destroy();
             if (i->layer->material.texture) {
@@ -446,7 +487,8 @@ void Scene::destroy() {
         }
         delete i;
     }
-    models.clear();
-    modelsById.clear();
+    nodes.clear();
+    nodesById.clear();
     materials.clear();
+    textures.clear();
 }

@@ -671,13 +671,13 @@ public:
     // Equivalent to parse() without a default profile and without forcing defaults.
     bool parse(const TBuiltInResource* builtInResources, int defaultVersion, bool forwardCompatible, EShMessages messages)
     {
-        return parse(builtInResources, defaultVersion, ENoProfile, false, forwardCompatible, messages);
+        return parse(builtInResources, defaultVersion, ECompatibilityProfile, false, forwardCompatible, messages);
     }
 
     bool parse(const TBuiltInResource* builtInResources, int defaultVersion, bool forwardCompatible, EShMessages messages,
                Includer& includer)
     {
-        return parse(builtInResources, defaultVersion, ENoProfile, false, forwardCompatible, messages, includer);
+        return parse(builtInResources, defaultVersion, ECompatibilityProfile, false, forwardCompatible, messages, includer);
     }
 
     // NOTE: Doing just preprocessing to obtain a correct preprocessed shader string

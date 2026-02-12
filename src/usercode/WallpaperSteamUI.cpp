@@ -12,7 +12,7 @@ bool _gSteamInit = false;
 bool _gSteamQueryComplete = false;
 
 struct SteamUIQuery_t {
-    EUGCQuery queryType;
+    EUGCQuery queryType = k_EUGCQuery_RankedByTrend;
     int page = 1;
     char search[1024];
 } _steamUIQuery;
@@ -330,6 +330,12 @@ void SteamUI_PopulateLocalList() {
     
     for (int i = 0; i < sz; i++) {
         auto id = pVecPublishedFileId[i];
+        uint32 state = SteamUGC()->GetItemState(id);
+        if (!(state & k_EItemStateInstalled) || (state & k_EItemStateNeedsUpdate)) {
+            SteamUGC()->DownloadItem(id, true);
+            continue;
+        }
+        
         SteamUIDownloaded_t downloaded;
         SteamUGC()->GetItemInstallInfo(id, &downloaded.sizeOnDisk, downloaded.folderPath, 1024, &downloaded.timestamp);
         downloaded.id = id;
@@ -506,6 +512,14 @@ void Wallpaper64SteamUI() {
         
         ImGui::EndChild();
         
+        ImGui::End();
+    }
+    else
+    {
+        ImGui::Begin("Warning", 0,  ImGuiWindowFlags_NoBringToFrontOnFocus);
+        ImGui::Text("STEAM is offline or unavailable.");
+        if (ImGui::Button("Retry"))
+            _steamStatus = 0;
         ImGui::End();
     }
 }

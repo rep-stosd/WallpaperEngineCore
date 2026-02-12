@@ -1,8 +1,11 @@
+// mtl_renderer.cpp - metal presenter backend
+
 #define NS_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
 #define MTK_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 #include "mtl_renderer.h"
+#include "R_Common.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -14,7 +17,35 @@ int metalLayerHeight();
 
 std::string GetBundleFilePath(const std::string& filename) ;
 
-void MTLShader::create(const std::string& code, const std::string& entryVS, const std::string& entryPS, const std::vector<uint64_t>& attachmentFmt, uint64_t depthFmt) {
+int calcVertexFormatStride(MTL::VertexFormat fmt)
+{
+    switch (fmt)
+    {
+        case MTL::VertexFormatUInt:
+        case MTL::VertexFormatInt:
+        case MTL::VertexFormatFloat:
+            return sizeof(float) * 1;
+        case MTL::VertexFormatUInt2:
+        case MTL::VertexFormatInt2:
+        case MTL::VertexFormatFloat2:
+            return sizeof(float) * 2;
+        case MTL::VertexFormatUInt3:
+        case MTL::VertexFormatInt3:
+        case MTL::VertexFormatFloat3:
+            return sizeof(float) * 3;
+        case MTL::VertexFormatUInt4:
+        case MTL::VertexFormatInt4:
+        case MTL::VertexFormatFloat4:
+            return sizeof(float) * 4;
+            
+        default:
+            break;
+    }
+    
+    return 0;
+}
+
+void MTLShader::create(const std::string& code, const std::string& entryVS, const std::string& entryPS, const std::vector<uint64_t>& attachmentFmt, const std::vector<uint64_t>& vertexFmt, uint64_t depthFmt) {
     auto* pDevice = MTLRenderer::singleton()->_pDevice;
     
     auto NSCode = NS::String::string(code.data(), NS::UTF8StringEncoding);
@@ -47,15 +78,52 @@ void MTLShader::create(const std::string& code, const std::string& entryVS, cons
     MTL::Function* pVertexFn = _pShaderLibrary->newFunction( NS::String::string(entryVS.data(), NS::UTF8StringEncoding) );
     MTL::Function* pFragFn = _pShaderLibrary->newFunction( NS::String::string(entryPS.data(), NS::UTF8StringEncoding) );
     
+    
+    
+
     _pDesc = MTL::RenderPipelineDescriptor::alloc()->init();
     _pDesc->setVertexFunction( pVertexFn );
     _pDesc->setFragmentFunction( pFragFn );
+    
+    
+    {
+        _pDesc->colorAttachments()->object(0)->setBlendingEnabled(true);
+        
+        // RGB blending
+        _pDesc->colorAttachments()->object(0)->setRgbBlendOperation(MTL::BlendOperationAdd);
+        _pDesc->colorAttachments()->object(0)->setSourceRGBBlendFactor(MTL::BlendFactorSourceAlpha);
+        _pDesc->colorAttachments()->object(0)->setDestinationRGBBlendFactor(MTL::BlendFactorOneMinusSourceAlpha);
+        
+        // Alpha blending
+        _pDesc->colorAttachments()->object(0)->setAlphaBlendOperation(MTL::BlendOperationAdd);
+        _pDesc->colorAttachments()->object(0)->setSourceAlphaBlendFactor(MTL::BlendFactorOne);
+        _pDesc->colorAttachments()->object(0)->setDestinationAlphaBlendFactor(MTL::BlendFactorOneMinusSourceAlpha);
+    }
+    
+    
     if (attachmentFmt.size() > 0) {
         for (int i = 0; i < attachmentFmt.size(); i++)
             _pDesc->colorAttachments()->object(i)->setPixelFormat( (MTL::PixelFormat)attachmentFmt[i]);
     }
     else
         _pDesc->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatRGBA8Unorm );
+    
+    if (vertexFmt.size() > 0) {
+        _pDesc->setVertexDescriptor(MTL::VertexDescriptor::vertexDescriptor());
+        
+        int offset = 0;
+        for (int i = 0; i < vertexFmt.size(); i++)
+        {
+            _pDesc->vertexDescriptor()->attributes()->object(i)->setFormat((MTL::VertexFormat)vertexFmt[i]);
+            _pDesc->vertexDescriptor()->attributes()->object(i)->setOffset(offset);
+            _pDesc->vertexDescriptor()->attributes()->object(i)->setBufferIndex(16);
+            
+            offset += calcVertexFormatStride((MTL::VertexFormat)vertexFmt[i]);
+        }
+        
+        _pDesc->vertexDescriptor()->layouts()->object(16)->setStride(offset);
+        _pDesc->vertexDescriptor()->layouts()->object(16)->setStepFunction(MTL::VertexStepFunctionPerVertex);
+    }
     
     if (depthFmt != UINT64_MAX) {
         _pDesc->setDepthAttachmentPixelFormat( (MTL::PixelFormat)depthFmt );
@@ -70,6 +138,11 @@ void MTLShader::create(const std::string& code, const std::string& entryVS, cons
     }
 
     _pPSO = pDevice->newRenderPipelineState( _pDesc, &pError );
+    
+    if (!_pPSO) {
+        __builtin_printf( "%s\n", pError->localizedDescription()->utf8String() );
+        assert( false );
+    }
 }
 
 void MTLShader::destroy() {
@@ -180,10 +253,18 @@ void MTLRenderer::init(MTL::Device *device) {
 }
 
 void MTLRenderer::renderTahoePipeline(MTL::CommandBuffer* pCmd, CA::MetalDrawable* pDrawable) {
+    static bool _testInit = false;
+    if (!_testInit) {
+        m_stateManager.init();
+        _testInit = true;
+    }
+    
+    m_stateManager.frame();
+    
     MTL::RenderPassDescriptor* pRpd = MTL::RenderPassDescriptor::alloc()->init();
     MTL::RenderPassColorAttachmentDescriptor* cd = pRpd->colorAttachments()->object(0);
     cd->setTexture(pDrawable->texture());
-    cd->setLoadAction(MTL::LoadActionClear);
+    cd->setLoadAction(MTL::LoadActionLoad);
     cd->setStoreAction(MTL::StoreActionStore);
     
     MTL::RenderCommandEncoder* pEnc = pCmd->renderCommandEncoder( pRpd );
@@ -213,6 +294,9 @@ void MTLRenderer::beginFrame() {
     MTL::CommandBuffer* pCmd = _pCommandQueue->commandBuffer();
     CA::MetalDrawable* pDrawable = (CA::MetalDrawable*)currentDrawable();
     
+    state_pCmd = pCmd;
+    state_pDrawable = pDrawable;
+    
     dispatch_semaphore_wait( _semaphore, DISPATCH_TIME_FOREVER );
     MTLRenderer* pRenderer = this;
     pCmd->addCompletedHandler( ^void( MTL::CommandBuffer* pCmd ){
@@ -223,7 +307,10 @@ void MTLRenderer::beginFrame() {
     
     pCmd->presentDrawable( pDrawable );
     pCmd->commit();
-
+    
+    state_pCmd = nullptr;
+    state_pDrawable = nullptr;
+    
     MTLRenderer_pAutoreleasePool->release();
 }
 

@@ -3,6 +3,14 @@
 #include <unordered_map>
 #include <vector>
 #include "mtl_renderer.h"
+#include "deps/glm/glm.hpp"
+#include "deps/glm/gtc/matrix_transform.hpp"
+
+#define SHADER_STAGE_VERTEX   0
+#define SHADER_STAGE_FRAGMENT 1
+
+#define BUFFER_SLOT_VERTEX 16
+#define BUFFER_SLOT_INSTANCE 17
 
 enum EBlendMode : uint32_t {
     kBlendModeDisabled,
@@ -32,11 +40,14 @@ public:
     void setShader();
     void addQuad();
     void addModel();
+    
+    void init();
 private:
+    
     
 };
 
-struct ShaderStateBuffer {
+struct UniformBuffer {
     struct ShaderStateInfo {
         uint64_t size;
         uint64_t offset;
@@ -47,6 +58,7 @@ struct ShaderStateBuffer {
     uint64_t stateSize;
     
     void create(uint64_t size) {
+        data.resize(size);
         gpuBuffer.create(size, MTL::ResourceStorageModeManaged);
         stateSize = size;
     }
@@ -66,28 +78,37 @@ struct ShaderStateBuffer {
 };
 
 
-class REND_MetalPresenter {
-public:
-    void init(MTLRenderer& rend);
-    void present();
-    
-private:
-    MTLRenderer *_pRend;
-};
-
-
 class REND_StateManager {
 public:
     /* R_ShaderParser.cpp */
-    void parseGLSLShader(const std::string& file, const std::string& entryPoint, uint64_t shaderStage);
+    std::string parseGLSLShaderDirective(const std::string& code);
+    std::string parseGLSLShader(const std::string& fileExt, const std::string& entryPoint, uint64_t shaderStage);
+    void createShader(const std::string& file);
     void createShaders();
     
     
     /* R_StateManager.cpp */
     void init();
+    void frame();
     
+    void calcRefDef();
+    void frameCamera();
+    
+    float off_x, off_y;
+    float sz_x, sz_y;
+    int cnt;
 private:
-    std::unordered_map<uint64_t, ShaderStateBuffer> shaderUniformBuffers;
-    std::unordered_map<uint64_t, MTLShader> shaders;
+    std::unordered_map<std::string, UniformBuffer> shaderUniformBuffers;
+    std::unordered_map<std::string, MTLShader> shaders;
+    
+    glm::mat4 view;
+    glm::mat4 projection;
+    
+    glm::mat4 mvp;
+    
+    glm::vec4 refdef; // xy: resolution, zw: pixel width
 };
 
+
+extern REND_StateManager m_stateManager;
+extern REND_CommandList m_cmdList;

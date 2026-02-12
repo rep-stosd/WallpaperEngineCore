@@ -11,6 +11,8 @@ GLFWwindow* window = nullptr;
 
 void apphide(GLFWwindow* wnd, void* metalDevice) ;
 
+// the net game runner (macosx only)
+
 int main( int argc, char* argv[] )
 {
 
@@ -23,7 +25,7 @@ int main( int argc, char* argv[] )
         return 0;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(1280, 960, "", NULL, NULL);
+    window = glfwCreateWindow(1920, 1200, "wallpaper64", NULL, NULL);
     
     auto* _pDevice = MTL::CreateSystemDefaultDevice();
     apphide(window, (void*)_pDevice);

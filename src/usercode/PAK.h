@@ -60,6 +60,19 @@ struct PAKImage {
     PAKImageMipmapEntry* mips;
 };
 
+// pakModel.cpp
+
+struct PAKModelHeader {
+    char magic[8];
+    int flags;
+    std::string json;
+    
+};
+
+struct PAKModel {
+    std::string name;
+};
+
 PAKImage PAKImage_Alloc(const std::string& imgPath);
 void PAKImage_Free(PAKImage& img);
 void PAKImage_GLUpload(PAKImage& bzImage, MTLTexture& texture);

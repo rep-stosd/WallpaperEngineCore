@@ -30,12 +30,17 @@ public:
     MTL::Device* _pDevice;
     MTL::CommandQueue* _pCommandQueue;
     dispatch_semaphore_t _semaphore;
+    
+    
+    
+    MTL::CommandBuffer* state_pCmd;
+    CA::MetalDrawable* state_pDrawable;
 };
 
 class MTLShader {
 public:
  //   void create(const std::string& pathVS, const std::string& pathPS, const std::string& entryVS, const std::string& entryPS);
-    void create(const std::string& code, const std::string& entryVS, const std::string& entryPS, const std::vector<uint64_t>& attachmentFmt = {}, uint64_t depthFmt = UINT64_MAX);
+    void create(const std::string& code, const std::string& entryVS, const std::string& entryPS, const std::vector<uint64_t>& attachmentFmt = {}, const std::vector<uint64_t>& vertexFmt = {}, uint64_t depthFmt = UINT64_MAX);
     void destroy();
     MTL::RenderPipelineState* _pPSO;
     MTL::RenderPipelineDescriptor* _pDesc;

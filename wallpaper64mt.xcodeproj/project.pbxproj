@@ -12,7 +12,7 @@
 		1804D4452E5CF39D005714B1 /* libfreeimage_arm64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1804D4432E5CF38D005714B1 /* libfreeimage_arm64.dylib */; };
 		1804D4462E5CF39D005714B1 /* libfreeimage_arm64.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 1804D4432E5CF38D005714B1 /* libfreeimage_arm64.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1825B9BC2E9D5E64007F74A5 /* R_CommandList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1825B9BA2E9D5E64007F74A5 /* R_CommandList.cpp */; };
-		1825B9C32E9D5EB3007F74A5 /* PAKTex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1825B9C02E9D5EB2007F74A5 /* PAKTex.cpp */; };
+		1825B9C32E9D5EB3007F74A5 /* PAKImg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1825B9C02E9D5EB2007F74A5 /* PAKImg.cpp */; };
 		1825B9C52E9D5EB3007F74A5 /* PAKPkg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1825B9C22E9D5EB2007F74A5 /* PAKPkg.cpp */; };
 		182724772EBDAC1600095BC1 /* glm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 182723882EBDAC1500095BC1 /* glm.cpp */; };
 		184D5B212E5BB79900072534 /* libfreeimage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 184D5B202E5BB78000072534 /* libfreeimage.a */; };
@@ -101,7 +101,6 @@
 		18B99CD12EA72BAB00E33C0A /* R_StateManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD02EA72BAB00E33C0A /* R_StateManager.cpp */; };
 		18B99CD32EA72BFE00E33C0A /* PAKMdl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD22EA72BFE00E33C0A /* PAKMdl.cpp */; };
 		18B99CD62EA72D6500E33C0A /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD42EA72D6500E33C0A /* Material.cpp */; };
-		18B99CD82EA72E9D00E33C0A /* R_MetalPresenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD72EA72E9D00E33C0A /* R_MetalPresenter.cpp */; };
 		18B99CDA2EA72FA000E33C0A /* CSceneLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD92EA72FA000E33C0A /* CSceneLayer.cpp */; };
 		18B99CDC2EA828F200E33C0A /* MaterialComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CDB2EA828F200E33C0A /* MaterialComponent.cpp */; };
 		18B99CE72EA8429900E33C0A /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CE52EA8429900E33C0A /* xxhash.c */; };
@@ -165,7 +164,7 @@
 		1819BC622E216CB800001758 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1825B9BA2E9D5E64007F74A5 /* R_CommandList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = R_CommandList.cpp; sourceTree = "<group>"; };
 		1825B9BB2E9D5E64007F74A5 /* R_Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = R_Common.hpp; sourceTree = "<group>"; };
-		1825B9C02E9D5EB2007F74A5 /* PAKTex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PAKTex.cpp; sourceTree = "<group>"; };
+		1825B9C02E9D5EB2007F74A5 /* PAKImg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PAKImg.cpp; sourceTree = "<group>"; };
 		1825B9C12E9D5EB2007F74A5 /* PAK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAK.h; sourceTree = "<group>"; };
 		1825B9C22E9D5EB2007F74A5 /* PAKPkg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PAKPkg.cpp; sourceTree = "<group>"; };
 		1827229A2EBDA82200095BC1 /* stdafx.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = stdafx.hpp; sourceTree = "<group>"; };
@@ -4924,7 +4923,6 @@
 		18B99CD22EA72BFE00E33C0A /* PAKMdl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PAKMdl.cpp; sourceTree = "<group>"; };
 		18B99CD42EA72D6500E33C0A /* Material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
 		18B99CD52EA72D6500E33C0A /* Material.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Material.hpp; sourceTree = "<group>"; };
-		18B99CD72EA72E9D00E33C0A /* R_MetalPresenter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = R_MetalPresenter.cpp; sourceTree = "<group>"; };
 		18B99CD92EA72FA000E33C0A /* CSceneLayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneLayer.cpp; sourceTree = "<group>"; };
 		18B99CDB2EA828F200E33C0A /* MaterialComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialComponent.cpp; sourceTree = "<group>"; };
 		18B99CE52EA8429900E33C0A /* xxhash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xxhash.c; sourceTree = "<group>"; };
@@ -5016,7 +5014,6 @@
 			children = (
 				18E107292E60FA3A003CEAD2 /* mtl_renderer.h */,
 				18E107242E60FA3A003CEAD2 /* mtl_renderer.cpp */,
-				18B99CD72EA72E9D00E33C0A /* R_MetalPresenter.cpp */,
 				1825B9BB2E9D5E64007F74A5 /* R_Common.hpp */,
 				1825B9BA2E9D5E64007F74A5 /* R_CommandList.cpp */,
 				18B99CCE2EA72B4400E33C0A /* R_ShaderParser.cpp */,
@@ -5032,7 +5029,7 @@
 			children = (
 				1825B9C12E9D5EB2007F74A5 /* PAK.h */,
 				1825B9C22E9D5EB2007F74A5 /* PAKPkg.cpp */,
-				1825B9C02E9D5EB2007F74A5 /* PAKTex.cpp */,
+				1825B9C02E9D5EB2007F74A5 /* PAKImg.cpp */,
 				18B99CD22EA72BFE00E33C0A /* PAKMdl.cpp */,
 			);
 			name = pak;
@@ -13250,7 +13247,6 @@
 				18890D272EA930A600C4ADDA /* spirv_reflect.cpp in Sources */,
 				1881749B2ED56927000B16DB /* Intermediate.cpp in Sources */,
 				1881747B2ED56927000B16DB /* SpvBuilder.cpp in Sources */,
-				18B99CD82EA72E9D00E33C0A /* R_MetalPresenter.cpp in Sources */,
 				18E107472E60FA3A003CEAD2 /* main.cpp in Sources */,
 				188174952ED56927000B16DB /* IntermTraverse.cpp in Sources */,
 				18890D2B2EA930A600C4ADDA /* output_stream.cpp in Sources */,
@@ -13262,7 +13258,7 @@
 				188E4B872E62C62700DDF480 /* WallpaperSteamUI.cpp in Sources */,
 				188174772ED56927000B16DB /* SpvPostProcess.cpp in Sources */,
 				188174792ED56927000B16DB /* SpvTools.cpp in Sources */,
-				1825B9C32E9D5EB3007F74A5 /* PAKTex.cpp in Sources */,
+				1825B9C32E9D5EB3007F74A5 /* PAKImg.cpp in Sources */,
 				188186DB2ED57160000B16DB /* spirv_glsl.cpp in Sources */,
 				188174AF2ED56927000B16DB /* hlslScanContext.cpp in Sources */,
 				1881749A2ED56927000B16DB /* InfoSink.cpp in Sources */,

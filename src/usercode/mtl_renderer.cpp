@@ -9,6 +9,9 @@
 #include <fstream>
 #include <sstream>
 
+#define min(x, y) ( (x>y) ? y : x )
+#define max(x, y) ( (x>y) ? x : y )
+
 void* currentDrawable() ;
 void* renderPassDescriptor() ;
 void* metalLayer() ;
@@ -204,7 +207,7 @@ void MTLBuffer::upload(void* pData, uint64_t size, uint64_t offset) {
     memcpy( _pBuffer->contents(), (void*)((char*)pData + offset), size );
     
 #ifndef __arm64__
-    _pBuffer->didModifyRange( NS::Range::Make( 0, _pBuffer->length() ) );
+    _pBuffer->didModifyRange( NS::Range::Make( 0, min(size, _pBuffer->length() ) ) );
 #endif
     this->size = size;
 }

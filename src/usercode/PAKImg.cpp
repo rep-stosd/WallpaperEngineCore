@@ -53,7 +53,7 @@ PAKImage PAKImage_Alloc(const std::string& imgPath) {
             imgStream.read((char*)&containerHeader.fiFormat, sizeof(FREE_IMAGE_FORMAT));
             imgStream.read((char*)&containerHeader.mp4, sizeof(uint32_t));
            // containerHeader.mp4 = true;
-            if (containerHeader.mp4)
+            if (containerHeader.mp4 || (imgHeader.textureFlags & PAKIMG_FLAG_MP4) )
                 containerHeader.fiFormat = FIF_MP4;
             containerVersion = 4;
             break;
@@ -203,6 +203,11 @@ void PAKImage_GLUpload_DDS(PAKImage& bzImage, MTLTexture& texture, int type) {
     texture.uploadDirect(size, (uint8_t*)bzImage.mips[0].data);
 }
 
+void PAKImage_GLUpload_MP4(PAKImage& bzImage)
+{
+    
+}
+
 
 void PAKImage_GLUpload(PAKImage& bzImage, MTLTexture& texture) {
    // printf("%.2f %.2f\n", (float)bzImage.width/bzImage.texWidth, (float)bzImage.height/bzImage.texHeight);
@@ -240,6 +245,8 @@ void PAKImage_GLUpload(PAKImage& bzImage, MTLTexture& texture) {
         return;
       }
     }
+    else if (bzImage.fiFormat == FIF_MP4)
+        PAKImage_GLUpload_MP4(bzImage);
     else 
-      PAKImage_GLUpload_PNG(bzImage, texture);
+        PAKImage_GLUpload_PNG(bzImage, texture);
 }

@@ -9,6 +9,13 @@
 #define LAYER_TYPE_VIDEO 2
 #define LAYER_TYPE_NODRAW -1
 
+
+struct Model
+{
+    PAKModel mdlData;
+};
+
+
 class Layer {
 public:
     virtual void update() {};
@@ -16,6 +23,7 @@ public:
     virtual void draw() {};
     virtual ~Layer() {}
     Material material;
+    Model model;
     std::string name;
     
     int type;
@@ -47,11 +55,6 @@ public:
     glm::vec3 origin;
     
     void update(const glm::vec3& parentPos);
-};
-
-struct Model
-{
-    
 };
 
 struct Node {
@@ -101,6 +104,7 @@ public:
 
     std::unordered_map<uint64_t, MTLTexture*> textures;
     std::unordered_map<uint64_t, Material*> materials;
+    std::unordered_map<uint64_t, Model*> models;
     
     
     std::unordered_map<uint64_t, Node*> nodesById;

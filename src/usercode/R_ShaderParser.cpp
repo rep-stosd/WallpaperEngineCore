@@ -118,6 +118,8 @@ std::string REND_StateManager::parseGLSLShader(const std::string &fileExt, const
     "#define texSample2D(s, t) texture(s, t)\n"
     "#define saturate(x) clamp(x, 0.0, 1.0)\n"
     "#define frac(x) fract(x)\n"
+    
+  //  "#define SPRITESHEET 1 \n"
     ;
     
     if (shaderStage == SHADER_STAGE_FRAGMENT) {

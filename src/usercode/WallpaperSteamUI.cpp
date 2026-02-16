@@ -1,10 +1,14 @@
+#include <future>
+#include <mutex>
 
 #include "stdafx.hpp"
 #include "CScene.hpp"
 #include "TextureLoader.hpp"
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "steam_api.h"
 #include "deps/simdjson.h"
+#include "deps/httplib.h"
 #include "imgui.h"
 
 int _steamStatus = 0;
@@ -44,25 +48,77 @@ public:
     void SteamUI_OnWorkshopListQueryComplete(SteamUGCQueryCompleted_t *pCallback, bool bIOFailure) {
         if (bIOFailure || pCallback->m_eResult != k_EResultOK) {
             printf("UGC query failed!\n");
-            _steamStatus = 2;
+            _steamUIState.downloading = -1;
             return;
         }
+
+        static std::vector<std::future<void>> g_WorkshopTasks;
+        static std::mutex g_WorkshopMutex;
         
-        for (int i = 0; i < 50; i++) {
+         g_WorkshopTasks.erase(std::remove_if(g_WorkshopTasks.begin(), g_WorkshopTasks.end(),
+             [](const std::future<void>& f) { return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready; }),
+             g_WorkshopTasks.end());
+
+        for (int i = 0; i < (int)pCallback->m_unNumResultsReturned; i++) {
             SteamUGCDetails_t detail;
-            SteamUGC()->GetQueryUGCResult(pCallback->m_handle, i, &detail);
+            if (!SteamUGC()->GetQueryUGCResult(pCallback->m_handle, i, &detail))
+                continue;
+
+            std::lock_guard<std::mutex> lock(g_WorkshopMutex);
             details.push_back(detail);
-            SteamUI_DownloadThumb(detail.m_hPreviewFile);
+
+            char _url[1024];
+            SteamUGC()->GetQueryUGCPreviewURL(pCallback->m_handle, i, _url, sizeof(_url));
+            std::string urlStr = _url;
+
+            if (urlStr.empty())
+                continue;
+
+            g_WorkshopTasks.push_back(std::async(std::launch::async, [detail, urlStr]() {
+                size_t pos = urlStr.find("://");
+                size_t slash = urlStr.find('/', pos + 3);
+
+                std::string host = urlStr.substr(0, slash); // e.g., https://images.steamusercontent.com
+                std::string path = urlStr.substr(slash);
+
+lab_retry_fetch:
+                httplib::Client cli(host);
+                cli.set_follow_location(true);
+                cli.set_connection_timeout(5);
+
+                if (auto res = cli.Get(path)) {
+                    if (res->status == 200) {
+                        FIMEMORY *stream = FreeImage_OpenMemory((BYTE*)res->body.data(), (DWORD)res->body.size());
+                        FREE_IMAGE_FORMAT fif = FreeImage_GetFileTypeFromMemory(stream, 0);
+                        FIBITMAP *bmp2 = FreeImage_LoadFromMemory(fif, stream);
+                        
+                        if (bmp2) {
+                            FIBITMAP *bmp = FreeImage_ConvertTo32Bits(bmp2);
+                            MTLTexture tex;
+                            tex.create(FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp),
+                                       MTL::PixelFormatBGRA8Unorm, MTL::TextureType2D,
+                                       MTL::StorageModeManaged, MTL::TextureUsageShaderRead);
+                            tex.upload(4, FreeImage_GetBits(bmp));
+
+                            {
+                                std::lock_guard<std::mutex> lock(g_WorkshopMutex);
+                                details_previews[detail.m_hPreviewFile] = tex;
+                            }
+
+                            FreeImage_Unload(bmp);
+                            FreeImage_Unload(bmp2);
+                        }
+                        FreeImage_CloseMemory(stream);
+                    }
+                    else
+                        goto lab_retry_fetch;
+                }
+            }));
         }
-        
-        
+
         SteamUGC()->ReleaseQueryUGCRequest(pCallback->m_handle);
         _gSteamQueryComplete = true;
-        
-        
-       // delete this;
     }
-
     
     void SteamUI_OnThumbDownloadComplete(RemoteStorageDownloadUGCResult_t *pCallback, bool bIOFailure) {
         if (bIOFailure || pCallback->m_eResult != k_EResultOK) {
@@ -115,7 +171,7 @@ void SteamUI_ParseItemInfo(Scene::Desc& desc) {
     if (type == "scene" || type == "Scene") {
         desc.type = 0;
     }
-    else if (type == "video") {
+    else if (type == "video" || type == "Video") {
         desc.type = 1;
     }
     else {

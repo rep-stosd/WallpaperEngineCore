@@ -16,6 +16,10 @@
 		1825B9C52E9D5EB3007F74A5 /* PAKPkg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1825B9C22E9D5EB2007F74A5 /* PAKPkg.cpp */; };
 		182724772EBDAC1600095BC1 /* glm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 182723882EBDAC1500095BC1 /* glm.cpp */; };
 		184D5B212E5BB79900072534 /* libfreeimage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 184D5B202E5BB78000072534 /* libfreeimage.a */; };
+		18657BBA2F426F940064B222 /* libssl.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18657BB82F426F930064B222 /* libssl.3.dylib */; };
+		18657BBB2F426F940064B222 /* libssl.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 18657BB82F426F930064B222 /* libssl.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		18657BBC2F426F940064B222 /* libcrypto.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18657BB92F426F930064B222 /* libcrypto.3.dylib */; };
+		18657BBD2F426F940064B222 /* libcrypto.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 18657BB92F426F930064B222 /* libcrypto.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1877443F2E52A8A400D6193E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1819BC622E216CB800001758 /* Cocoa.framework */; platformFilters = (macos, ); };
 		187744402E52A8A400D6193E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18AD2D112E20DC8D00174B2A /* QuartzCore.framework */; };
 		187744422E52A8A400D6193E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71A9C07927349D5500932563 /* Foundation.framework */; };
@@ -91,7 +95,6 @@
 		188196C92ED57D06000B16DB /* libglfw.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 188196C82ED57D06000B16DB /* libglfw.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		188196CB2ED57D2A000B16DB /* libsdkencryptedappticket.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 188196CA2ED57D2A000B16DB /* libsdkencryptedappticket.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		188196CD2ED57D39000B16DB /* libsteam_api.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 188196CC2ED57D38000B16DB /* libsteam_api.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		1889097B2EA85BD700C4ADDA /* CSceneModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 188909792EA85BD700C4ADDA /* CSceneModel.cpp */; };
 		18890D272EA930A600C4ADDA /* spirv_reflect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18890AC02EA930A400C4ADDA /* spirv_reflect.cpp */; };
 		18890D2B2EA930A600C4ADDA /* output_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18890AC52EA930A400C4ADDA /* output_stream.cpp */; };
 		188E4B842E62C22F00DDF480 /* libfreeimage.3.18.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 187760712E598B670066A9AA /* libfreeimage.3.18.0.dylib */; };
@@ -100,9 +103,8 @@
 		18B99CCF2EA72B4400E33C0A /* R_ShaderParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CCE2EA72B4400E33C0A /* R_ShaderParser.cpp */; };
 		18B99CD12EA72BAB00E33C0A /* R_StateManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD02EA72BAB00E33C0A /* R_StateManager.cpp */; };
 		18B99CD32EA72BFE00E33C0A /* PAKMdl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD22EA72BFE00E33C0A /* PAKMdl.cpp */; };
-		18B99CD62EA72D6500E33C0A /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD42EA72D6500E33C0A /* Material.cpp */; };
 		18B99CDA2EA72FA000E33C0A /* CSceneLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CD92EA72FA000E33C0A /* CSceneLayer.cpp */; };
-		18B99CDC2EA828F200E33C0A /* MaterialComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CDB2EA828F200E33C0A /* MaterialComponent.cpp */; };
+		18B99CDC2EA828F200E33C0A /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CDB2EA828F200E33C0A /* Material.cpp */; };
 		18B99CE72EA8429900E33C0A /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = 18B99CE52EA8429900E33C0A /* xxhash.c */; };
 		18C885822E84B8DD00637DBE /* imgui_widgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18C885732E84B8DC00637DBE /* imgui_widgets.cpp */; };
 		18C885842E84B8DD00637DBE /* imgui_impl_glfw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18C885762E84B8DC00637DBE /* imgui_impl_glfw.cpp */; };
@@ -132,9 +134,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				18657BBB2F426F940064B222 /* libssl.3.dylib in Embed Libraries */,
 				188196C92ED57D06000B16DB /* libglfw.3.dylib in Embed Libraries */,
 				1804D4422E5BF408005714B1 /* libassimp.5.4.3.dylib in Embed Libraries */,
 				188E4B852E62C22F00DDF480 /* libfreeimage.3.18.0.dylib in Embed Libraries */,
+				18657BBD2F426F940064B222 /* libcrypto.3.dylib in Embed Libraries */,
 				1804D4462E5CF39D005714B1 /* libfreeimage_arm64.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
@@ -591,6 +595,8 @@
 		184D5B1A2E5BB76300072534 /* libassimp.5.4.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.4.3.dylib; path = ../../../../../../opt/local/lib/libassimp.5.4.3.dylib; sourceTree = "<group>"; };
 		184D5B1B2E5BB76300072534 /* libfreeimage.3.18.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreeimage.3.18.0.dylib; path = ../../../../../../opt/local/lib/libfreeimage.3.18.0.dylib; sourceTree = "<group>"; };
 		184D5B202E5BB78000072534 /* libfreeimage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreeimage.a; path = ../../../../../../opt/local/lib/libfreeimage.a; sourceTree = "<group>"; };
+		18657BB82F426F930064B222 /* libssl.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.3.dylib; path = ../../../../../../opt/local/libexec/openssl3/lib/libssl.3.dylib; sourceTree = "<group>"; };
+		18657BB92F426F930064B222 /* libcrypto.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.3.dylib; path = ../../../../../../opt/local/libexec/openssl3/lib/libcrypto.3.dylib; sourceTree = "<group>"; };
 		187760712E598B670066A9AA /* libfreeimage.3.18.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreeimage.3.18.0.dylib; path = ../../../../../../usr/local/Cellar/freeimage/3.18.0/lib/libfreeimage.3.18.0.dylib; sourceTree = "<group>"; };
 		18815E8D2ED568A1000B16DB /* CRC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRC.h; sourceTree = "<group>"; };
 		18815E8E2ED568A1000B16DB /* md5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
@@ -4896,7 +4902,6 @@
 		188196C82ED57D06000B16DB /* libglfw.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libglfw.3.dylib; sourceTree = "<group>"; };
 		188196CA2ED57D2A000B16DB /* libsdkencryptedappticket.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsdkencryptedappticket.dylib; sourceTree = "<group>"; };
 		188196CC2ED57D38000B16DB /* libsteam_api.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsteam_api.dylib; sourceTree = "<group>"; };
-		188909792EA85BD700C4ADDA /* CSceneModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneModel.cpp; sourceTree = "<group>"; };
 		188909812EA930A400C4ADDA /* .git-blame-ignore-revs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ".git-blame-ignore-revs"; sourceTree = "<group>"; };
 		188909822EA930A400C4ADDA /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		188909832EA930A400C4ADDA /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -4921,10 +4926,9 @@
 		18B99CCE2EA72B4400E33C0A /* R_ShaderParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = R_ShaderParser.cpp; sourceTree = "<group>"; };
 		18B99CD02EA72BAB00E33C0A /* R_StateManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = R_StateManager.cpp; sourceTree = "<group>"; };
 		18B99CD22EA72BFE00E33C0A /* PAKMdl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PAKMdl.cpp; sourceTree = "<group>"; };
-		18B99CD42EA72D6500E33C0A /* Material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
 		18B99CD52EA72D6500E33C0A /* Material.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Material.hpp; sourceTree = "<group>"; };
 		18B99CD92EA72FA000E33C0A /* CSceneLayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneLayer.cpp; sourceTree = "<group>"; };
-		18B99CDB2EA828F200E33C0A /* MaterialComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialComponent.cpp; sourceTree = "<group>"; };
+		18B99CDB2EA828F200E33C0A /* Material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
 		18B99CE52EA8429900E33C0A /* xxhash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xxhash.c; sourceTree = "<group>"; };
 		18B99CE62EA8429900E33C0A /* xxhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxhash.h; sourceTree = "<group>"; };
 		18C885732E84B8DC00637DBE /* imgui_widgets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_widgets.cpp; sourceTree = "<group>"; };
@@ -4983,12 +4987,14 @@
 				187744422E52A8A400D6193E /* Foundation.framework in Frameworks */,
 				18C892202E8988FA0000C48F /* libavutil.a in Frameworks */,
 				18C8921E2E8988FA0000C48F /* libavcodec.a in Frameworks */,
+				18657BBC2F426F940064B222 /* libcrypto.3.dylib in Frameworks */,
 				187744432E52A8A400D6193E /* Metal.framework in Frameworks */,
 				188E4B842E62C22F00DDF480 /* libfreeimage.3.18.0.dylib in Frameworks */,
 				187744442E52A8A400D6193E /* MetalKit.framework in Frameworks */,
 				18C892212E8988FA0000C48F /* libswscale.a in Frameworks */,
 				187744452E52A8A400D6193E /* IOKit.framework in Frameworks */,
 				184D5B212E5BB79900072534 /* libfreeimage.a in Frameworks */,
+				18657BBA2F426F940064B222 /* libssl.3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4999,12 +5005,10 @@
 			isa = PBXGroup;
 			children = (
 				18B99CD52EA72D6500E33C0A /* Material.hpp */,
-				18B99CD42EA72D6500E33C0A /* Material.cpp */,
-				18B99CDB2EA828F200E33C0A /* MaterialComponent.cpp */,
+				18B99CDB2EA828F200E33C0A /* Material.cpp */,
 				18E1090B2E610EC4003CEAD2 /* CScene.hpp */,
 				18E1090A2E610EC4003CEAD2 /* CScene.cpp */,
 				18B99CD92EA72FA000E33C0A /* CSceneLayer.cpp */,
-				188909792EA85BD700C4ADDA /* CSceneModel.cpp */,
 			);
 			name = scene;
 			sourceTree = "<group>";
@@ -13106,6 +13110,8 @@
 		71A9C07427349D4100932563 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				18657BB92F426F930064B222 /* libcrypto.3.dylib */,
+				18657BB82F426F930064B222 /* libssl.3.dylib */,
 				188196C52ED57CD0000B16DB /* libglfw.3.dylib */,
 				188196C42ED57CD0000B16DB /* libsteam_api.dylib */,
 				18C8921B2E8988EA0000C48F /* libavcodec.a */,
@@ -13274,7 +13280,6 @@
 				188187872ED57160000B16DB /* spirv_reflect.cpp in Sources */,
 				188174A62ED56927000B16DB /* PpContext.cpp in Sources */,
 				188187862ED57160000B16DB /* spirv_cfg.cpp in Sources */,
-				1889097B2EA85BD700C4ADDA /* CSceneModel.cpp in Sources */,
 				188174902ED56927000B16DB /* Initialize.cpp in Sources */,
 				18B99CE72EA8429900E33C0A /* xxhash.c in Sources */,
 				188174A42ED56927000B16DB /* Pp.cpp in Sources */,
@@ -13282,14 +13287,13 @@
 				188174932ED56927000B16DB /* SpirvIntrinsics.cpp in Sources */,
 				18C8858C2E84B8DD00637DBE /* imgui_tables.cpp in Sources */,
 				1881749E2ED56927000B16DB /* reflection.cpp in Sources */,
-				18B99CD62EA72D6500E33C0A /* Material.cpp in Sources */,
 				1881748D2ED56927000B16DB /* propagateNoContraction.cpp in Sources */,
 				18E1073B2E60FA3A003CEAD2 /* TextureLoader.cpp in Sources */,
 				188174AC2ED56927000B16DB /* hlslParseables.cpp in Sources */,
 				18E1090C2E610EC4003CEAD2 /* CScene.cpp in Sources */,
 				188174992ED56927000B16DB /* ShaderLang.cpp in Sources */,
 				1881747D2ED56927000B16DB /* SPVRemapper.cpp in Sources */,
-				18B99CDC2EA828F200E33C0A /* MaterialComponent.cpp in Sources */,
+				18B99CDC2EA828F200E33C0A /* Material.cpp in Sources */,
 				188174962ED56927000B16DB /* intermOut.cpp in Sources */,
 				18C8858A2E84B8DD00637DBE /* imgui.cpp in Sources */,
 				18818A412ED57162000B16DB /* spirv_cross_parsed_ir.cpp in Sources */,
@@ -13331,6 +13335,7 @@
 					/usr/local/Cellar/freeimage/3.18.0/include,
 					/usr/local/Cellar/assimp/6.0.2/include,
 					/usr/local/Cellar/ffmpeg/7.1.1_3/include,
+					/opt/local/include,
 				);
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -13352,6 +13357,7 @@
 					"$(PROJECT_DIR)/src/usercode/deps/steamsdk/public/steam/lib/win64",
 					"$(PROJECT_DIR)/src/usercode/deps/steamsdk/public/steam/lib/win32",
 					"$(PROJECT_DIR)/src/usercode/deps",
+					/opt/local/libexec/openssl3/lib,
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = 1;
@@ -13392,6 +13398,7 @@
 					/usr/local/Cellar/freeimage/3.18.0/include,
 					/usr/local/Cellar/assimp/6.0.2/include,
 					/usr/local/Cellar/ffmpeg/7.1.1_3/include,
+					/opt/local/include,
 				);
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -13413,6 +13420,7 @@
 					"$(PROJECT_DIR)/src/usercode/deps/steamsdk/public/steam/lib/win64",
 					"$(PROJECT_DIR)/src/usercode/deps/steamsdk/public/steam/lib/win32",
 					"$(PROJECT_DIR)/src/usercode/deps",
+					/opt/local/libexec/openssl3/lib,
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.myself.wallpaper64;

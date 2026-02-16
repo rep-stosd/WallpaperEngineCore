@@ -1,10 +1,11 @@
 #pragma once
+
+#include "stdafx.hpp"
+
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
 #include "mtl_renderer.h"
-#include "deps/glm/glm.hpp"
-#include "deps/glm/gtc/matrix_transform.hpp"
 
 #define SHADER_STAGE_VERTEX   0
 #define SHADER_STAGE_FRAGMENT 1

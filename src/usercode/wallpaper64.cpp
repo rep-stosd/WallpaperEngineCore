@@ -5,6 +5,10 @@
 
 Scene scene;
 REND_CommandList cmdList;
+
+struct GLFWwindow;
+extern GLFWwindow* window;
+
 /*
  DEVELOPMENT GOALS:
  - add in-memory streaming of mp4s (MaterialComponent.cpp:VideoComponent)
@@ -25,12 +29,31 @@ void R_BuildFrameData()
     
 }
 
+void SCR_DrawTextShaded(int x, int y, const char * text, ...)
+{
+    static char stuff[2048];
+    va_list ls;
+    va_start(ls, text);
+    vsnprintf(stuff, sizeof(stuff), text, ls);
+    va_end(ls);
+    
+    ImGui::GetBackgroundDrawList()->AddText(ImVec2(x+1,y+1), IM_COL32_BLACK, stuff);
+    ImGui::GetBackgroundDrawList()->AddText(ImVec2(x,y), IM_COL32_WHITE, stuff);
+}
+
+void SCr_DrawTextRainbow()
+{
+    
+}
+
 void NetGameImguiWindow() {
-    ImGui::GetBackgroundDrawList()->AddText(ImVec2(5,3), IM_COL32_BLACK, "WORK IN PROGRESS");
-    ImGui::GetBackgroundDrawList()->AddText(ImVec2(4,2), IM_COL32_WHITE, "WORK IN PROGRESS");
+    SCR_DrawTextShaded(5, 3, "The NetGame Engine (wallpaper64) built on " __TIMESTAMP__);
+    SCR_DrawTextShaded(5, 13, "Metal 30.0 fps");
     
     void Wallpaper64SteamUI();
     Wallpaper64SteamUI();
+    
+    void apphide_togglehide(GLFWwindow *wnd, bool state = true);
     
     static bool _native = false;
     
@@ -39,6 +62,8 @@ void NetGameImguiWindow() {
     ImGui::DragFloat2("sz", &m_stateManager.sz_x);
     ImGui::DragInt("cnt", &m_stateManager.cnt);
     ImGui::Checkbox("native render", &_native);
+    if ((ImGui::Button("Start apphide")))
+        apphide_togglehide(window);
     ImGui::End();
     
     
@@ -62,7 +87,6 @@ void NetGameImguiWindow() {
             if (c > m_stateManager.cnt) break;
             if (i->layer && i->layer->material.texture) {
                 if (ImageLayer* r = dynamic_cast<ImageLayer*>(i->layer)) {
-                    ImVec2 crop(r->cropOffset.x, r->cropOffset.y);
                     ImVec2 pos = ImVec2(i->recursedOrigin.x, i->recursedOrigin.y) * _size;
                     ImVec2 size = ImVec2(i->recursedScale.x, i->recursedScale.y) * ImVec2(i->size.x, i->size.y) * _size;
                     ImVec2 cursorPos = ImVec2(pos.x,  -pos.y) - ImVec2((size.x * 0.5f) * i->xOffset, (size.y * 0.5f)  * i->yOffset);

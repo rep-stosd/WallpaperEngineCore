@@ -18,15 +18,15 @@ struct Material {
     int width, height;
     int texWidth, texHeight;
     std::vector<MaterialComponent*> components;
-    
 };
 
 class MaterialComponent {
 public:
     MaterialComponent(Material& mat) {
         _pMaterial = &mat;
-        _pMaterial->components.push_back(this);
+      //  _pMaterial->components.push_back(this);
     }
+    
     virtual void init() = 0;
     virtual void update() = 0;
     virtual void destroy() = 0;
@@ -37,6 +37,8 @@ protected:
 class MatVideoComponent : public MaterialComponent {
 public:
     MatVideoComponent(Material& mat) : MaterialComponent(mat) {}
+    MatVideoComponent(Material& mat, const std::string &filename) : MaterialComponent(mat) { init(filename); }
+    ~MatVideoComponent();
     
     void init() override {};
     void init(const PAKImage& image);

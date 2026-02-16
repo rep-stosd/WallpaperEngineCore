@@ -65,6 +65,9 @@ void MatVideoComponent::init(const std::string& videoPath) {
     _pMaterial->width = codec_ctx->width;
     _pMaterial->height = codec_ctx->height;
     
+    _pMaterial->texWidth = codec_ctx->width;
+    _pMaterial->texHeight = codec_ctx->height;
+    
     _pMaterial->texture = new MTLTexture();
     _pMaterial->texture->create(_pMaterial->width, _pMaterial->height, MTL::PixelFormatBGRA8Unorm, MTL::TextureType2D, MTL::StorageModeManaged, MTL::TextureUsageShaderRead);
     

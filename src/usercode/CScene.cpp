@@ -37,11 +37,7 @@ void Scene::parseMaterial(Material& mat, const std::string& path) {
                         mat.texWidth = img.texWidth;
                         mat.texHeight = img.texHeight;
                         
-                        if (img.fiFormat == FIF_MP4) {
-                            (new MatVideoComponent(mat))->init(img);
-                        }
-                        else
-                            PAKImage_GLUpload(img, *mat.texture);
+                        PAKImage_GLUpload(img, *mat.texture);
                         
                         PAKImage_Free(img);
                     }
@@ -85,10 +81,16 @@ void Scene::parseMaterial(Material& mat, const std::string& path) {
 
 void Scene::parseModel(Model& model, const std::string& path)
 {
+    if(!std::filesystem::exists(sceneRootPath + path))
+        return;
+    puts((sceneRootPath + path).data());
     
+    auto mdl = PAKModel_Alloc(sceneRootPath + path);
+    
+    model.mdlData = mdl;
 }
 
-void Scene::parseImage(ImageLayer* render, const std::string& path) {
+void Scene::parseImage(ImageLayer* layer, const std::string& path) {
     if(!std::filesystem::exists(sceneRootPath + path))
         return;
 
@@ -96,7 +98,7 @@ void Scene::parseImage(ImageLayer* render, const std::string& path) {
     simdjson::dom::parser parser;
     simdjson::dom::element root = parser.load(sceneRootPath + path); // todo: filesystem
 
-    render->material = {};
+    layer->material = {};
 
     if (root["cropoffset"].is_string()) {
         auto originStr = root["cropoffset"].get_string().value().data();
@@ -104,17 +106,24 @@ void Scene::parseImage(ImageLayer* render, const std::string& path) {
             
         float x, y, z;
         ss >> x >> y >> z;
-        render->cropOffset.x = x;
-        render->cropOffset.y = y;
+        layer->cropOffset.x = x;
+        layer->cropOffset.y = y;
     }
 
     if (root["material"].is_string()) {
-        parseMaterial(render->material, root["material"].get_string().value().data() );
+        parseMaterial(layer->material, root["material"].get_string().value().data() );
+        
+        if (root["height"].is_number()) {
+            layer->material.height = (int)root["height"].get_uint64();
+        }
+        
+        if (root["width"].is_number()) {
+            layer->material.width = (int)root["width"].get_uint64();
+        }
     }
     
-    
     if (root["puppet"].is_string()) {
-        parseMaterial(render->material, root["puppet"].get_string().value().data() );
+        parseModel(layer->model, root["puppet"].get_string().value().data() );
     }
     
 }
@@ -432,15 +441,15 @@ void Scene::initForPkg(const std::string& path) {
 
 
 void Scene::initForVideo(const std::string& path) {
-    //assert(!("UNIMPLEMENTED AS OF YET!"));
-    /*
-        Model* model = new Model();
-        model->render = new VideoRender();
-        ((VideoRender*)model->render)->init(path);
-        model->scale = {1,1, 0};
-        model->size = {1920,1200, 0};
-        models.push_back(model);
-    */
+    
+    Node* node = new Node();
+    node->layer = new ImageLayer();
+    node->layer->material.components.push_back(new MatVideoComponent(node->layer->material, path));
+    node->size = {1920,1200,0};
+    node->scale = {1,1,0};
+    
+    nodes.push_back(node);
+    materials[0] = &node->layer->material;
 }
     
 
@@ -483,6 +492,12 @@ void Scene::destroy() {
                     i->layer->material.texture->destroy();
                 delete i->layer->material.texture;
             }
+            for (auto* p : i->layer->material.components)
+                if (p)
+                {
+                    p->destroy();
+                    delete (decltype(p))p;
+                }
             delete i->layer;
         }
         delete i;
